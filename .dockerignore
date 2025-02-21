@@ -1,0 +1,7 @@
+docker-compose.yaml
+Docker
+.git
+.idea
+.dockerignore
+backend/node_modules
+frontend/node_modules
