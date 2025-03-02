@@ -12,10 +12,6 @@ services:
     build:
       dockerfile: Docker/Psql/Dockerfile
     restart: always
-    healthcheck:
-      test: [ "CMD-SHELL", "psql -U vieiratechnology -d vieiratechnology -c '\\l' &&>/dev/null" ]
-      interval: 5s
-      retries: 3
     networks:
       - app_network
   
@@ -25,10 +21,6 @@ services:
       context: Docker/Redis/.
       dockerfile: Dockerfile
     restart: always
-    healthcheck:
-      test: [ "CMD-SHELL", "redis-cli -u redis://deploy123@127.0.0.1:5001 ping" ]
-      interval: 5s
-      retries: 3
     expose:
       - 5001
     networks:
@@ -40,10 +32,6 @@ services:
       context: .
       dockerfile: Docker/Nodejs/Dockerfile
     restart: always
-    healthcheck:
-      test: [ "CMD-SHELL", "/bin/sh /home/deploy/vieiratechnology/tests/healthcheck.sh" ]
-      interval: 10s
-      retries: 4
     expose:
       - 3001
       - 4001
@@ -51,9 +39,9 @@ services:
       - app_network
     depends_on:
       psql:
-        condition: service_healthy
+        condition: service_started
       redis:
-        condition: service_healthy
+        condition: service_started
   
   nginx-certbot:
     container_name: nginx-ssl
@@ -61,10 +49,6 @@ services:
       context: Docker/NginxCertbot/.
       dockerfile: Dockerfile
     restart: always
-    healthcheck:
-      test: [ "CMD-SHELL", "/bin/sh /healthcheck.sh" ]
-      interval: 10s
-      retries: 3
     ports:
       - 443:443
       - 80:80
@@ -72,7 +56,7 @@ services:
       - app_network
     depends_on:
       nodejs:
-        condition: service_healthy
+        condition: service_started
     
     
     
